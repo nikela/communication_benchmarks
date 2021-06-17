@@ -1,14 +1,17 @@
-/*******************************************************************************************************************
-      Congestion benchmark based on Abhinav Bhatele's WICON benchmark
-      Performs ping pong communication between different nodes paired with a random_value mapping. PPN is set to 1 for communication.
-      A second process per node performs busy waiting.
-      ITER=number of iterations
-      SIZE=how many different message sizes to test
-      MIN_MSG_SIZE in bytes
-      DISTANCE=if set, reports node distance
-      Other specifications: Blocking, Warmup of 10 iterations, Cleans cache before every communication phase, Excludes 25% of max values as outliers 
-      How to execute: allocate N nodes, 2*N processes, placement=ROUND_ROBIN
-*******************************************************************************************************************/
+/* 	MPI ping-pong benchmark with congestion. Based on Abhinav Bhatele's WICON benchmark.
+ *	Copyright @ Nikela Papadopoulou 2015-2021
+ */
+
+
+/*
+ *	Performs ping pong communication between different cores, paired with a random_value mapping.
+ *	ITER: number of iterations per message size
+ *	SIZE: different message sizes to test, step *2
+ *	MIN_MSG_SIZE: the minimum message size to test, in Bytes
+ *	DISTANCE: if set, reports node distance (requires a distance.c/distance.h to compute node distances, architecture-dependent)
+ *	SWEEP: if set, sweeps LLC between runs for different message sizes
+ */
+    
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -108,7 +111,7 @@ void build_random_value_map(int init, int map_size, int size,int * map)
 			map[p] = k;
 			map[k] = p;
 			map[q] = i; 
-    	}
+    		}
   	}
 }
 
@@ -209,7 +212,7 @@ int main(int argc, char * argv[]) {
 
 		sort(res,ITER);
 	   	maxval[k]=res[ITER-(int)(0.25*ITER)];
-        MPI_Barrier(MPI_COMM_WORLD);
+        	MPI_Barrier(MPI_COMM_WORLD);
    	}
    	free(res);    
 
